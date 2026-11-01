@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <meta name="description" content="Explore an interactive 3D Earth in your browser: orbit, zoom and discover cities.">
+    <meta name="theme-color" content="#050b16">
+    <title>Earth Explorer</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>Earth Explorer</h1>
+          <p class="tagline">Interactive 3D globe &middot; Unity WebGL demo</p>
+        </div>
+      </div>
+      <button id="fullscreen-button" class="btn" type="button" disabled>Full screen</button>
+    </header>
+
+    <main class="stage" id="stage">
+      <canvas id="unity-canvas" tabindex="-1" aria-label="Earth Explorer 3D view"></canvas>
+      <div id="loading" class="overlay" role="status" aria-live="polite">
+        <div class="globe-spinner" aria-hidden="true"></div>
+        <p class="loading-title">Loading Earth&hellip;</p>
+        <div class="progress"><div id="progress-fill" class="progress-fill"></div></div>
+        <p id="progress-label" class="progress-label">0%</p>
+      </div>
+      <div id="error" class="overlay error" hidden>
+        <p class="loading-title">The demo could not start</p>
+        <p id="error-message" class="error-message"></p>
+        <p class="hint">A WebGL&nbsp;2 capable browser is required (recent Chrome, Edge, Firefox or Safari).</p>
+      </div>
+    </main>
+
+    <footer class="controls">
+      <ul>
+        <li><kbd class="mouse-only">Drag</kbd><kbd class="touch-only">Swipe</kbd> orbit</li>
+        <li><kbd class="mouse-only">Scroll</kbd><kbd class="mouse-only">+ / &minus;</kbd><kbd class="touch-only">Pinch</kbd><kbd>On-screen buttons</kbd> zoom</li>
+        <li><kbd class="mouse-only">Click</kbd><kbd class="touch-only">Tap</kbd> a city for details</li>
+      </ul>
+      <p class="credit">Earth textures: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a>, CC&nbsp;BY&nbsp;4.0</p>
+    </footer>
+
+    <script>
+      var canvas = document.getElementById("unity-canvas");
+      var loading = document.getElementById("loading");
+      var progressFill = document.getElementById("progress-fill");
+      var progressLabel = document.getElementById("progress-label");
+      var fullscreenButton = document.getElementById("fullscreen-button");
+
+      if (window.matchMedia("(pointer: coarse)").matches) document.body.classList.add("touch");
+
+      function showError(message) {
+        loading.hidden = true;
+        document.getElementById("error-message").textContent = message;
+        document.getElementById("error").hidden = false;
+      }
+
+      var buildUrl = "Build";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/docs.data.unityweb",
+        frameworkUrl: buildUrl + "/docs.framework.js.unityweb",
+        codeUrl: buildUrl + "/docs.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Nikhil",
+        productName: "Earth Explorer",
+        productVersion: "0.1.0",
+        showBanner: function (message, type) {
+          if (type === "error") showError(message);
+          else console.warn(message);
+        },
+      };
+
+      var script = document.createElement("script");
+      script.src = buildUrl + "/docs.loader.js";
+      script.onload = function () {
+        createUnityInstance(canvas, config, function (progress) {
+          var percent = Math.round(progress * 100);
+          progressFill.style.width = percent + "%";
+          progressLabel.textContent = percent + "%";
+        }).then(function (unityInstance) {
+          loading.hidden = true;
+          canvas.focus();
+          fullscreenButton.disabled = false;
+          fullscreenButton.onclick = function () { unityInstance.SetFullscreen(1); };
+        }).catch(function (message) {
+          showError(String(message));
+        });
+      };
+      script.onerror = function () { showError("The game files could not be downloaded."); };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>

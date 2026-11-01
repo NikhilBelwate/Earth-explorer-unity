@@ -1,0 +1,48 @@
+# Publishes the committed Unity WebGL build in docs/ to GitHub Pages.
+# Build it locally first: Tools > Earth Explorer > Build WebGL (or EarthWebBuild.BuildWebBatch).
+# One-time repo setup: Settings > Pages > Source = "GitHub Actions".
+name: Deploy WebGL demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check that the WebGL build exists
+        run: |
+          test -f docs/index.html || { echo "::error::docs/index.html is missing. Build WebGL in Unity and commit docs/."; exit 1; }
+          ls -la docs docs/Build
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,141 @@
+:root {
+  --bg: #050b16;
+  --surface: #0a1628;
+  --border: #16304d;
+  --text: #d8f3ff;
+  --muted: #7fa6c2;
+  --accent: #5fe1ff;
+  --accent-strong: #19b7e6;
+  --danger: #ff8a8a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Header */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-mark {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9ff1ff 0, #2a8fd0 35%, #0b3a6b 70%, #041325 100%);
+  box-shadow: 0 0 14px rgba(95, 225, 255, 0.35);
+}
+h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.tagline { margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+.btn {
+  flex: none;
+  padding: 8px 14px;
+  border: 1px solid var(--accent-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: rgba(95, 225, 255, 0.1); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Game area */
+.stage { position: relative; flex: 1; min-height: 0; background: #000; }
+#unity-canvas { display: block; width: 100%; height: 100%; background: var(--bg); outline: none; touch-action: none; }
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  background: var(--bg);
+}
+.overlay[hidden] { display: none; }
+.loading-title { margin: 0; font-size: 1.05rem; letter-spacing: 0.04em; }
+.progress { width: min(320px, 80vw); height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+.progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--accent-strong), var(--accent)); transition: width 0.2s ease; }
+.progress-label { margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.globe-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .globe-spinner { animation: none; } }
+
+.error .loading-title { color: var(--danger); }
+.error-message { margin: 0; max-width: 520px; color: var(--text); word-break: break-word; }
+.hint { margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+/* Controls help */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.controls ul { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; padding: 0; list-style: none; }
+kbd {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+}
+.touch-only { display: none; }
+body.touch .touch-only { display: inline-block; }
+body.touch .mouse-only { display: none; }
+.credit { margin: 0; }
+.credit a { color: var(--accent); }
+
+@media (max-width: 600px) {
+  .topbar { padding: 8px 16px; }
+  .tagline { display: none; }
+  h1 { font-size: 1rem; }
+  .controls { padding: 8px 16px; font-size: 0.78rem; }
+  .credit { width: 100%; }
+}
